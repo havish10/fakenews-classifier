@@ -7,6 +7,8 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import metrics
 import matplotlib.pyplot as plt
+import pickle
+
 
 df = pd.read_csv('./fake_or_real_news.csv')
 df_test = pd.read_csv('./test_true.csv')
@@ -19,25 +21,19 @@ y = df.label
 df = df.drop('label', axis=1)
 X_train, X_test, y_train, y_test = train_test_split(df['text'], y, test_size=0.33, random_state=53)
 
-
-
 # Test Input
 count_vectorizer_input = CountVectorizer(stop_words='english')
+count_train = count_vectorizer_input.fit_transform(X_train)
 count_input = count_vectorizer_input.transform(input)
-
 
 # Train stuff
 count_vectorizer = CountVectorizer(stop_words='english')
 count_train = count_vectorizer.fit_transform(X_train)
 count_test = count_vectorizer.transform(X_test)
 
-tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_df=0.7)
-tfidf_train = tfidf_vectorizer.fit_transform(X_train)
-tfidf_test = tfidf_vectorizer.transform(X_test)
-
-
 print(type(count_test))
 print(type(count_input))
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -74,25 +70,21 @@ def plot_confusion_matrix(cm, classes,
 
     plt.show()
 
-#TFIDF
-clf = MultinomialNB()
-
-clf.fit(tfidf_train, y_train)
-pred = clf.predict(tfidf_test)
-score = metrics.accuracy_score(y_test, pred)
-print("accuracy:   %0.3f" % score)
-cm = metrics.confusion_matrix(y_test, pred, labels=['FAKE', 'REAL'])
-#plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
-
 #Count test
 clf = MultinomialNB()
 
 clf.fit(count_train, y_train)
-pred = clf.predict(count_input)
+
+# save the model to disk
+filename = 'finalized_model.sav'
+pickle.dump(clf, open(filename, 'wb'))
+
+'''
+pred = clf.predict(count_test)
 score = metrics.accuracy_score(y_test, pred)
 print("accuracy:   %0.3f" % score)
 cm = metrics.confusion_matrix(y_test, pred, labels=['FAKE', 'REAL'])
-#plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
+plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
 
 print(count_test.get_shape())
 
@@ -103,3 +95,4 @@ print(count_input.get_shape())
 
 pred_input = clf.predict(count_input)
 print(pred_input)
+'''
