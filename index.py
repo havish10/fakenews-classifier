@@ -4,8 +4,10 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, Ha
 from sklearn.model_selection import train_test_split
 from flask import Flask
 from flask import request
+from werkzeug.contrib.fixers import ProxyFix
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 def predict(text):
     df = pd.read_csv('./fake_or_real_news.csv')
@@ -31,12 +33,16 @@ def predict(text):
 
 @app.route("/")
 def hello():
+    return "Welcome to our API"
+
+@app.route("/api")
+def test():
     text = request.args.get('text')
     result = predict(text)
     return str(result)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
 
 
 
