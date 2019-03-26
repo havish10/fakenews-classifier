@@ -20,6 +20,7 @@ input = df_test['text']
 y = df.label
 df = df.drop('label', axis=1)
 X_train, X_test, y_train, y_test = train_test_split(df['text'], y, test_size=0.33, random_state=53)
+print(X_train)
 
 # Test Input
 count_vectorizer_input = CountVectorizer(stop_words='english')
@@ -38,13 +39,7 @@ def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
-    """
-    See full source and example: 
-    http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
-    
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
+
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
@@ -79,20 +74,11 @@ clf.fit(count_train, y_train)
 filename = 'finalized_model.sav'
 pickle.dump(clf, open(filename, 'wb'))
 
-'''
+
 pred = clf.predict(count_test)
 score = metrics.accuracy_score(y_test, pred)
 print("accuracy:   %0.3f" % score)
 cm = metrics.confusion_matrix(y_test, pred, labels=['FAKE', 'REAL'])
 plot_confusion_matrix(cm, classes=['FAKE', 'REAL'])
 
-print(count_test.get_shape())
 
-print("============================================")
-
-print(count_input.get_shape())
-
-
-pred_input = clf.predict(count_input)
-print(pred_input)
-'''

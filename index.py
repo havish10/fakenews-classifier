@@ -5,8 +5,11 @@ from sklearn.model_selection import train_test_split
 from flask import Flask
 from flask import request
 from werkzeug.contrib.fixers import ProxyFix
+from flask_cors import CORS
 
 app = Flask(__name__)
+cors = CORS(app)
+
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 def predict(text):
@@ -42,7 +45,8 @@ def test():
     return str(result)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
+ 
 
 
 
